@@ -52,21 +52,28 @@ public class Accounts {
         this.name = name;
     }
 
+
+
     public void deposit(double amount){
         if(amount<=0){
+            Transaction.logGenerator(Transaction.ActionType.FAILED_DEPOSIT,this.id,amount);
             throw new IllegalArgumentException("Please enter positive value...");
         }
-    this.balance+=amount;
+        this.balance+=amount;
+        Transaction.logGenerator(Transaction.ActionType.DEPOSIT,this.id,amount);
     }
 
+
     public boolean withdraw(double amount){
-        if(amount<0){
+        if(amount<=0){
             throw new IllegalArgumentException("withdraw amount cannot be negative");
         }
         if(amount>this.balance){
+            Transaction.logGenerator(Transaction.ActionType.FAILED_WITHDRAW,this.id,amount);
             throw new IllegalArgumentException("Insufficient funds");
         }
-    this.balance-=amount;
+        this.balance-=amount;
+        Transaction.logGenerator(Transaction.ActionType.WITHDRAW,this.id,amount);
         return true;
     }
 
