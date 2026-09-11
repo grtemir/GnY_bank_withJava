@@ -17,8 +17,9 @@ public class Accounts {
     }
 
     public void setId(int id) {
-        if(id<=0){
-            throw new IllegalArgumentException("Account id cannot be negative!!");        }
+        if (id <= 0) {
+            throw new IllegalArgumentException("Account id cannot be negative!!");
+        }
         this.id = id;
     }
 
@@ -27,8 +28,8 @@ public class Accounts {
     }
 
     public void setPassword(String password) {
-        if(password==null || password.length()>12){
-            throw  new IllegalArgumentException("The password cannot be longer than 12 char or empty!!");
+        if (password == null || password.length() > 12) {
+            throw new IllegalArgumentException("The password cannot be longer than 12 char or empty!!");
         }
         this.password = password;
     }
@@ -38,7 +39,7 @@ public class Accounts {
     }
 
     public void setBalance(double balance) {
-        if(balance<0){
+        if (balance < 0) {
             throw new IllegalArgumentException("Ballance cannot be negative!!");
         }
         this.balance = balance;
@@ -53,31 +54,30 @@ public class Accounts {
     }
 
 
-
-    public void deposit(double amount){
-        if(amount<=0){
-            Transaction.logGenerator(Transaction.ActionType.FAILED_DEPOSIT,this.id,amount);
+    public void deposit(double amount) {
+        if (amount <= 0) {
+            Transaction.logGenerator(Transaction.ActionType.FAILED_DEPOSIT, this.id, amount);
             throw new IllegalArgumentException("Please enter positive value...");
         }
-        this.balance+=amount;
-        Transaction.logGenerator(Transaction.ActionType.DEPOSIT,this.id,amount);
+        this.balance += amount;
+        Transaction.logGenerator(Transaction.ActionType.DEPOSIT, this.id, amount);
     }
 
 
-    public boolean withdraw(double amount){
-        if(amount<=0){
+    public boolean withdraw(double amount) {
+        if (amount <= 0) {
             throw new IllegalArgumentException("withdraw amount cannot be negative");
         }
-        if(amount>this.balance){
-            Transaction.logGenerator(Transaction.ActionType.FAILED_WITHDRAW,this.id,amount);
+        if (amount > this.balance) {
+            Transaction.logGenerator(Transaction.ActionType.FAILED_WITHDRAW, this.id, amount);
             throw new IllegalArgumentException("Insufficient funds");
         }
-        this.balance-=amount;
-        Transaction.logGenerator(Transaction.ActionType.WITHDRAW,this.id,amount);
+        this.balance -= amount;
+        Transaction.logGenerator(Transaction.ActionType.WITHDRAW, this.id, amount);
         return true;
     }
 
-    public void checkBalance(){
-        System.out.println("Your balance is "+this.balance);
+    public void checkBalance() {
+        System.out.println("Your balance is " + this.balance);
     }
 }
