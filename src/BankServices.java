@@ -18,7 +18,7 @@ public class BankServices {
         return accounts;
     }
 
-    public Accounts findAccount(int id) {
+    public static Accounts findAccount(int id) {
         for (Accounts acc : accounts) {
             if (acc.getId() == id) {
                 return acc;
@@ -29,7 +29,7 @@ public class BankServices {
 
     }
 
-    public void transferMoney(int sender, int receiver, double amount) {
+    public static void transferMoney(int sender, int receiver, double amount) {
         Accounts senderAcc = findAccount(sender);
         Accounts receiverAcc = findAccount(receiver);
 
@@ -52,7 +52,7 @@ public class BankServices {
 
     }
 
-    public Accounts authenticate(int id, String password) {
+    public static Accounts authenticate(int id, String password) {
         Accounts acc;
         acc = findAccount(id);
         if (acc == null || !acc.getPassword().equals(password)) {
@@ -63,7 +63,8 @@ public class BankServices {
         return acc;
     }
 
-    public void changePassword(String oldpass, String newpass, Accounts acc) {
+
+    public static void changePassword(String oldpass, String newpass, Accounts acc) {
         if (acc == null || newpass == null || newpass.trim().isEmpty()) {
             System.out.println("Invalid value...");
             Transaction.logGenerator(Transaction.ActionType.FAILED_CHANGE_PASSWORD, acc.getId());
@@ -94,6 +95,17 @@ public class BankServices {
         accounts.remove(acc);
         Transaction.logGenerator(Transaction.ActionType.DELETE_ACCOUNT, id);
 
+    }
+    public static void createAccountByUSer(int id,String name,String password){
+        if(name==null || name.trim().isEmpty()){
+            System.out.println("Please dont enter empty values...");
+            return;
+        }
+        Accounts acc=new Accounts(id,password,0.0,name);
+
+        BankServices.getAccounts().add(acc);
+
+        Transaction.logGenerator(Transaction.ActionType.USER_CREATE_ACCOUNT,id);
     }
 }
 
