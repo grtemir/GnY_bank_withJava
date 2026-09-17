@@ -6,11 +6,19 @@ public class Accounts {
 
 
     public Accounts(int id, String password, double balance, String name) {
-        this.id = id;
+        this.id = -1;
         this.password = password;
         this.balance = balance;
         this.name = name;
     }
+
+    public Accounts(String password, double balance, String name) {
+        this.password = password;
+        this.balance = balance;
+        this.name = name;
+    }
+
+
 
     public int getId() {
         return id;

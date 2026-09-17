@@ -1,3 +1,4 @@
+import javax.xml.crypto.Data;
 import java.util.Scanner;
 
 public class AdminServices {
@@ -52,28 +53,28 @@ public class AdminServices {
     public static double totalBalance() {
        double totalBalance=0.0;
 
-       for(Accounts acc: BankServices.getAccounts()){
-           totalBalance+=acc.getBalance();
-       }
+        totalBalance=DatabaseTransactions.totalBalance();
+
         Transaction.logGenerator(Transaction.ActionType.ADMIN_CHECK_TOTAL_BALANCE,totalBalance);
 
         return totalBalance;
     }
 
-    public static void createAccountByAdmin(int id,double balance,String name){
+    public static void createAccountByAdmin(double balance,String name){
         if(name==null || name.trim().isEmpty()){
             System.out.println("Please dont enter empty values...");
             return;
         }
-        else if(balance<0 || id<0) {
-            System.out.println("Balance and id cannot be below zero...");
+        else if(balance<0 ) {
+            System.out.println("Balance cannot be below zero...");
             return;
         }
-        Accounts acc=new Accounts(id,"0000",balance,name);
+        Accounts acc=new Accounts("0000",balance,name);
 
-        BankServices.getAccounts().add(acc);
 
+        int id=DatabaseTransactions.addAccount(acc);
         Transaction.logGenerator(Transaction.ActionType.ADMIN_CREATE_ACCOUNT,id);
+
     }
 
     public static void deleteAccountByAdmin(int id){
@@ -83,7 +84,7 @@ public class AdminServices {
         }
         for(Accounts acc : BankServices.getAccounts()){
             if(acc.getId()==id){
-                BankServices.getAccounts().remove(acc);
+                DatabaseTransactions.deleteAccount(id);
                 System.out.println("Deleted succesfully of account "+id);
                 Transaction.logGenerator(Transaction.ActionType.ADMIN_DELETE_ACCOUNT,id);
                 return;

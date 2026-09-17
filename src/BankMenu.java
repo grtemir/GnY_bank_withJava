@@ -125,6 +125,7 @@ public class BankMenu {
         } while (true);
 
     }
+// calculate fibonacci number
 
     private static void adminLogIn() {
         System.out.println("Please enter admin username : ");
@@ -143,7 +144,7 @@ public class BankMenu {
             System.out.println("|------------------=--------------------------|");
             System.out.println("| 1:List logs...                              |");
             System.out.println("| 2:List logs for any account...              |");
-            System.out.println("| 3:Show total balance all of bank...                          |");
+            System.out.println("| 3:Show total balance all of bank...         |");
             System.out.println("| 4:Delete any account...                     |");
             System.out.println("| 5:List accounts...                          |");
             System.out.println("| 0:Log out...                                |");
