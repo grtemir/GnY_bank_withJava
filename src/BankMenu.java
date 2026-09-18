@@ -47,12 +47,10 @@ public class BankMenu {
         clearCli();
         System.out.println("Please enter your name:");
         String name = scan.next();
-        System.out.println("Please enter id that you want(if is not exist already):");
-        int id = scan.nextInt();
         System.out.println("Please enter your password:");
         String password = scan.next();
 
-        BankServices.createAccountByUSer(id, name, password);
+        BankServices.createAccountByUSer(name, password);
     }
 
     private static void userLogIn() {
@@ -84,7 +82,7 @@ public class BankMenu {
             clearCli();
             switch (chs) {
                 case 1:
-                    user.checkBalance();
+                    System.out.println("Your balance is " + DatabaseTransactions.checkBalance(user.getId()));
                     break;
                 case 2: {
                     System.out.println("Please enter id that you want to send money: ");
@@ -97,13 +95,13 @@ public class BankMenu {
                 case 3: {
                     System.out.println("Please enter deposit amount: ");
                     double amount = scan.nextDouble();
-                    user.deposit(amount);
+                    DatabaseTransactions.deposit(user.getId(),amount);
                     break;
                 }
                 case 4: {
                     System.out.println("Please enter withdraw amount: ");
                     double amount = scan.nextDouble();
-                    user.withdraw(amount);
+                    DatabaseTransactions.withdraw(user.getId(),amount);
                     break;
                 }
                 case 5: {

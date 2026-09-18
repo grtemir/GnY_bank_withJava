@@ -3,58 +3,27 @@ import java.util.List;
 
 
 public class BankServices {
-    private static List<Accounts> accounts = new ArrayList<Accounts>();
-    private int nextID = 1000;
-
-    public Accounts createAccount(String name, String password) {
-        Accounts newAccount = new Accounts(nextID, password, 0.0, name);
-
-        accounts.add(newAccount);
-        nextID++;
-        return newAccount;
-    }
-
-    public static List<Accounts> getAccounts() {
-        return accounts;
-    }
-
-    public static Accounts findAccount(int id) {
-        for (Accounts acc : accounts) {
-            if (acc.getId() == id) {
-                return acc;
-            }
-
-        }
-        return null;
-
-    }
 
     public static void transferMoney(int sender, int receiver, double amount) {
-        Accounts senderAcc = findAccount(sender);
-        Accounts receiverAcc = findAccount(receiver);
 
-        if (senderAcc == null || receiverAcc == null) {
-            System.out.println("Error:no available sender or receiver account");
-            Transaction.logGenerator(Transaction.ActionType.FAILED_TRANSFER, sender, receiver, amount);
-            return;
-        }
-        if (senderAcc == receiverAcc) {
+
+
+        if (sender == receiver) {
             System.out.println("Error:cannot send same account");
             Transaction.logGenerator(Transaction.ActionType.FAILED_TRANSFER, sender, receiver, amount);
             return;
         }
 
 
-        senderAcc.withdraw(amount);
-        receiverAcc.deposit(amount);
+        DatabaseTransactions.withdraw(sender,amount);
+        DatabaseTransactions.deposit(receiver,amount);
         Transaction.logGenerator(Transaction.ActionType.TRANSFER, sender, receiver, amount);
 
 
     }
 
     public static Accounts authenticate(int id, String password) {
-        Accounts acc;
-        acc = findAccount(id);
+        Accounts acc=DatabaseTransactions.findUserInfos(id);
         if (acc == null || !acc.getPassword().equals(password)) {
             System.out.println("Wrong id or password");
             return null;
@@ -71,7 +40,7 @@ public class BankServices {
             return;
         }
         if (acc.getPassword().equals(oldpass)) {
-            acc.setPassword(newpass);
+            DatabaseTransactions.changePassword(acc.getId(),newpass);
             Transaction.logGenerator(Transaction.ActionType.CHANGE_PASSWORD, acc.getId());
             return;
         }
@@ -87,23 +56,23 @@ public class BankServices {
             return;
         }
 
-        if (acc.getBalance() != 0.0) {
+        if (DatabaseTransactions.checkBalance(id) != 0.0) {
             System.out.println("Your balance must be zero to delete account...");
             Transaction.logGenerator(Transaction.ActionType.FAILED_DELETE_ACCOUNT, id);
             return;
         }
-        accounts.remove(acc);
+        DatabaseTransactions.deleteAccount(id);
         Transaction.logGenerator(Transaction.ActionType.DELETE_ACCOUNT, id);
 
     }
-    public static void createAccountByUSer(int id,String name,String password){
+    public static void createAccountByUSer(String name,String password){
         if(name==null || name.trim().isEmpty()){
             System.out.println("Please dont enter empty values...");
             return;
         }
-        Accounts acc=new Accounts(id,password,0.0,name);
+        Accounts acc=new Accounts(password,name);
 
-        BankServices.getAccounts().add(acc);
+        int id=DatabaseTransactions.addAccount(acc);
 
         Transaction.logGenerator(Transaction.ActionType.USER_CREATE_ACCOUNT,id);
     }

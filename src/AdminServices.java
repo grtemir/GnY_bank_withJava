@@ -69,7 +69,7 @@ public class AdminServices {
             System.out.println("Balance cannot be below zero...");
             return;
         }
-        Accounts acc=new Accounts("0000",balance,name);
+        Accounts acc=new Accounts("0000",name);
 
 
         int id=DatabaseTransactions.addAccount(acc);
@@ -82,13 +82,14 @@ public class AdminServices {
             System.out.println("Id cannot be below zero...");
             return;
         }
-        for(Accounts acc : BankServices.getAccounts()){
-            if(acc.getId()==id){
-                DatabaseTransactions.deleteAccount(id);
-                System.out.println("Deleted succesfully of account "+id);
-                Transaction.logGenerator(Transaction.ActionType.ADMIN_DELETE_ACCOUNT,id);
-                return;
-            }
+        if (DatabaseTransactions.checkBalance(id) != 0.0) {
+            System.out.println("Your balance must be zero to delete account...");
+            Transaction.logGenerator(Transaction.ActionType.FAILED_DELETE_ACCOUNT, id);
+            return;
+        }
+        if(DatabaseTransactions.deleteAccount(id)) {
+            Transaction.logGenerator(Transaction.ActionType.ADMIN_DELETE_ACCOUNT, id);
+            return;
         }
         System.out.println("Cannot found this account...");
     }
@@ -98,11 +99,9 @@ public class AdminServices {
         System.out.println("|______________________________________________|");
         System.out.println("|-------------------Accounts-------------------|");
         System.out.println("|_____|______________________________|_________|");
-        for(Accounts acc : BankServices.getAccounts()) {
-            System.out.println("|%5d|%30s|%9.2f|".formatted(acc.getId(), acc.getName(), acc.getBalance()));
-        }
+        DatabaseTransactions.listAccount();
         System.out.println("|----------------------------------------------|");
-        System.out.println("|--------------------------Listed %3d accounts-|".formatted(BankServices.getAccounts().size()));
+        System.out.println("|--------------------------Listed %3d accounts-|");
         System.out.println("|______________________________________________|");
 
         Transaction.logGenerator(Transaction.ActionType.ADMIN_LIST_ACCOUNTS);

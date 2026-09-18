@@ -6,11 +6,14 @@ import java.sql.Statement;
 
 public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:banka.db";
-
     public static Connection getConnection() throws SQLException {
-
+        try {
+            Class.forName("org.sqlite.JDBC");
+            System.out.println("Driver basariyla yuklendi!");
+        } catch (ClassNotFoundException e) {
+            System.err.println("SURUCU YUKLENEMEDI: " + e.getMessage());
+        }
         return DriverManager.getConnection(URL);
-
     }
 
     public static void InitialTables() throws SQLException {
