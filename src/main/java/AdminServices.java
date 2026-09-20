@@ -1,5 +1,4 @@
 import javax.xml.crypto.Data;
-import java.util.Scanner;
 
 public class AdminServices {
 
@@ -18,34 +17,32 @@ public class AdminServices {
     }
 
     public static void listLogs() {
-        if (Transaction.getLogs().isEmpty()) {
-            System.out.println("There're no log yet...");
+        int count =DatabaseTransactions.listLogs();
+        if (count==0) {
+            System.out.println("There're no logs yet...");
             return;
         }
-        for (String log : Transaction.getLogs()) {
-            System.out.println(log);
+        else if(count==1){
+            System.out.println("An error occured while fetching logs...");
+            return;
         }
+
         Transaction.logGenerator(Transaction.ActionType.ADMIN_LIST_LOGS);
 
     }
 
     public static void listLogs(int id) {
-        if (Transaction.getLogs().isEmpty()) {
-            System.out.println("There're no log yet...");
+
+        int count =DatabaseTransactions.listLogs();
+        if (count==0) {
+            System.out.println("There're no logs yet...");
             return;
         }
-        boolean status = false;
-        String logFormat = "ID: " + id;
-        for (String log : Transaction.getLogs()) {
-            if (log.contains(logFormat)) {
-                System.out.println(log);
-                status = true;
-            }
-        }
-        if (!status) {
-            System.out.println("There are no log yet for this account");
+        else if(count==1){
+            System.out.println("An error occured while fetching logs...");
             return;
         }
+        DatabaseTransactions.listLogsAnyUser(id);
         Transaction.logGenerator(Transaction.ActionType.ADMIN_LIST_LOGS);
 
     }
@@ -62,7 +59,7 @@ public class AdminServices {
 
     public static void createAccountByAdmin(double balance,String name){
         if(name==null || name.trim().isEmpty()){
-            System.out.println("Please dont enter empty values...");
+            System.out.println("You entered empty values...");
             return;
         }
         else if(balance<0 ) {

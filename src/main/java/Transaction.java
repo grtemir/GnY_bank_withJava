@@ -6,7 +6,6 @@ public class Transaction {
     private final int receiverId;
     private final double amount;
 
-    private static final ArrayList<String> logs = new ArrayList<>();
 
     public enum ActionType {
         DEPOSIT, WITHDRAW, FAILED_DEPOSIT, FAILED_WITHDRAW, TRANSFER,
@@ -22,9 +21,6 @@ public class Transaction {
         this.amount = amount;
     }
 
-    public static ArrayList<String> getLogs() {
-        return new ArrayList<>(logs);
-    }
 
 
     public int getSenderId() {
@@ -40,23 +36,24 @@ public class Transaction {
     }
 
     public static void logGenerator(ActionType action) {
-        logGenerator(action,-1, -1, 0.0);
+        logGenerator(action,null, null, null);
     }
 
-    public static void logGenerator(ActionType action, double amount) {
-        logGenerator(action, -1, -1, amount);
+    public static void logGenerator(ActionType action, Double amount) {
+        logGenerator(action, null, null, amount);
     }
 
-    public static void logGenerator(ActionType action, int senderId) {
-        logGenerator(action, senderId, -1, 0.0);
+    public static void logGenerator(ActionType action, Integer senderId) {
+        logGenerator(action, senderId, null, null);
     }
 
-    public static void logGenerator(ActionType action, int senderId, double amount) {
-        logGenerator(action, senderId, -1, amount);
+    public static void logGenerator(ActionType action, Integer senderId, Double amount) {
+        logGenerator(action, senderId, null, amount);
     }
 
-    public static void logGenerator(ActionType action, int senderId, int receiverId, double amount) {
-        logs.add("[%s] ID: %d -- RECEIVER_ID: %d -- Action: %s -- Amount: %.2f \n".formatted(LocalDateTime.now(), senderId, receiverId, action, amount));
+    public static void logGenerator(ActionType action, Integer senderId, Integer targetId, Double amount) {
+
+        DatabaseTransactions.logGenerator(senderId,targetId,amount,action.toString());
 
     }
 

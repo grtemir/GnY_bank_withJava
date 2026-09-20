@@ -1,7 +1,3 @@
-import java.util.ArrayList;
-import java.util.List;
-
-
 public class BankServices {
 
     public static void transferMoney(int sender, int receiver, double amount) {

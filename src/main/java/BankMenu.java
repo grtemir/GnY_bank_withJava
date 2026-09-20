@@ -1,4 +1,3 @@
-import java.sql.SQLOutput;
 import java.util.Scanner;
 
 public class BankMenu {
@@ -133,7 +132,7 @@ public class BankMenu {
         if (!AdminServices.adminAuth(id, password)) {
             System.out.println("You entered wrong admin info!!!");
             clearCli();
-        }
+            return;        }
         clearCli();
         int chs;
         do {

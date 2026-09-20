@@ -1,4 +1,3 @@
-import javax.swing.plaf.nimbus.State;
 import java.sql.Connection;
 import java.sql.DriverManager;
 import java.sql.SQLException;
@@ -7,12 +6,6 @@ import java.sql.Statement;
 public class DatabaseManager {
     private static final String URL = "jdbc:sqlite:banka.db";
     public static Connection getConnection() throws SQLException {
-        try {
-            Class.forName("org.sqlite.JDBC");
-            System.out.println("Driver basariyla yuklendi!");
-        } catch (ClassNotFoundException e) {
-            System.err.println("SURUCU YUKLENEMEDI: " + e.getMessage());
-        }
         return DriverManager.getConnection(URL);
     }
 
@@ -28,14 +21,19 @@ public class DatabaseManager {
                 "balance REAL DEFAULT 0.0, " +
                 "FOREIGN KEY(id) REFERENCES users(id) ON DELETE CASCADE);";
 
+        String sqlLogs="CREATE TABLE IF NOT EXISTS logRecords(" +
+                "id INTEGER PRIMARY KEY ,action TEXT NOT NULL, "+
+                "amount REAL,target_id INTEGER,crtime TIMESTAMP default CURRENT_TIMESTAMP"+
+                ",FOREIGN KEY(id) REFERENCES users(id))";
+
 
         try(Connection conn = getConnection();
 
         Statement st = conn.createStatement();) {
-
             st.execute("PRAGMA foreign_keys=ON;");
             st.execute(sqlUser);
             st.execute(sqlAcc);
+            st.execute(sqlLogs);
 
             System.out.println("Tables created succesfully");
         }catch(SQLException e){
