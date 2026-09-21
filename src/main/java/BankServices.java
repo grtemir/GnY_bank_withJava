@@ -32,8 +32,9 @@ public class BankServices {
     public static void changePassword(String oldpass, String newpass, Accounts acc) {
         if (acc == null || newpass == null || newpass.trim().isEmpty()) {
             System.out.println("Invalid value...");
-            Transaction.logGenerator(Transaction.ActionType.FAILED_CHANGE_PASSWORD, acc.getId());
-            return;
+            if(acc!=null) {
+                Transaction.logGenerator(Transaction.ActionType.FAILED_CHANGE_PASSWORD,acc.getId());
+            }return;
         }
         if (acc.getPassword().equals(oldpass)) {
             DatabaseTransactions.changePassword(acc.getId(),newpass);
@@ -45,7 +46,7 @@ public class BankServices {
 
     }
 
-    public void closeAccount(int id, String password) {
+    public static void closeAccount(int id, String password) {
         Accounts acc;
         acc = authenticate(id, password);
         if (acc == null) {
@@ -61,16 +62,16 @@ public class BankServices {
         Transaction.logGenerator(Transaction.ActionType.DELETE_ACCOUNT, id);
 
     }
-    public static void createAccountByUSer(String name,String password){
+    public static int createAccountByUSer(String name,String password){
         if(name==null || name.trim().isEmpty()){
             System.out.println("Please dont enter empty values...");
-            return;
+            return -1;
         }
         Accounts acc=new Accounts(password,name);
 
         int id=DatabaseTransactions.addAccount(acc);
-
         Transaction.logGenerator(Transaction.ActionType.USER_CREATE_ACCOUNT,id);
+        return id;
     }
 }
 

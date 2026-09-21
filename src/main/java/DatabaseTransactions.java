@@ -12,14 +12,15 @@ public class DatabaseTransactions {
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pstAcc = conn.prepareStatement(stAcc);
-             PreparedStatement pstUser = conn.prepareStatement(stUser, Statement.RETURN_GENERATED_KEYS);) {
+             PreparedStatement pstUser = conn.prepareStatement(stUser);) {
 
             pstUser.setString(1, acc.getName());
             pstUser.setString(2, acc.getPassword());
             pstUser.executeUpdate();
 
             int id = 0;
-            var idRs = pstUser.getGeneratedKeys();
+            var stmt = conn.createStatement();
+            var idRs = stmt.executeQuery("SELECT last_insert_rowid()");
             if (idRs.next()) {
                 id = idRs.getInt(1);
             }
@@ -35,6 +36,7 @@ public class DatabaseTransactions {
 
         } catch (SQLException e) {
             System.out.println("Database cannot open " + e.getMessage());
+            e.printStackTrace();
             return -1;
         }
 
@@ -197,11 +199,10 @@ public class DatabaseTransactions {
 
             ResultSet rs = pst.executeQuery();
             if (rs.next()) {
-                String password = rs.getString(2);
                 String name = rs.getString(1);
-                Accounts acc = new Accounts(id, password, name);
+                String password = rs.getString(2);
 
-                return acc;
+                return new Accounts(id, password, name);
             }
         } catch (SQLException e) {
             System.out.println("Database cannot open " + e.getMessage());
@@ -209,15 +210,16 @@ public class DatabaseTransactions {
         return null;
     }
 
-    public static void logGenerator(Integer id, Integer target_id, Double amount, String action) {
+    public static void logGenerator(Integer sender_id, Integer target_id, Double amount, String action) {
 
-        String sqlLog = "INSERT INTO logRecords(id,action,amount,target_id) VALUES(?,?,?,?)";
+        String sqlLog = "INSERT INTO logRecords(sender_id,action,amount,target_id) VALUES(?,?,?,?)";
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pst = conn.prepareStatement(sqlLog);) {
-            pst.setObject(1, id);
+            pst.setObject(1, sender_id);
             pst.setString(2, action);
             pst.setObject(3, amount);
             pst.setObject(4, target_id);
+
             pst.executeUpdate();
         } catch (SQLException e) {
             System.out.println("Database cannot open " + e.getMessage());
@@ -225,7 +227,7 @@ public class DatabaseTransactions {
     }
 
     public static int listLogs() {
-        String sqlListLogs = "SELECT id,action,amount,target_id, crtime FROM logRecords ";
+        String sqlListLogs = "SELECT sender_id,action,amount,target_id, crtime FROM logRecords ";
         try (Connection conn = DatabaseManager.getConnection();
              Statement stLogs = conn.createStatement();
              ) {
@@ -233,17 +235,18 @@ public class DatabaseTransactions {
             ResultSet rsLogs = stLogs.executeQuery(sqlListLogs);
             int logCount=0;
             while (rsLogs.next()) {
-                Integer id = rsLogs.getObject(1,Integer.class);
-                String action = rsLogs.getString(2);
-                Double amount = rsLogs.getObject(3,Double.class);
-                Integer target_id = rsLogs.getObject(4,Integer.class);
-                String localTime = rsLogs.getString(5);
-                System.out.printf("[%s] user : %s -> %s | Amount: %s | Target: %s%n",
-                        localTime, id, action,
-                        amount, target_id);
+
+                Object idObj = rsLogs.getObject("sender_id");
+                String action = rsLogs.getString("action");
+                Object amountObj = rsLogs.getObject("amount");
+                Object targetIdObj = rsLogs.getObject("target_id");
+                String localTime = rsLogs.getString("crtime");
+
+                System.out.printf("[%s] ID: %s -> %s | Amount: %s | Target: %s%n",
+                        localTime, idObj, action, amountObj, targetIdObj);
                 logCount++;
             }
-            return  logCount;
+            return logCount;
 
         } catch (SQLException e) {
             System.out.println("Database cannot open " + e.getMessage());

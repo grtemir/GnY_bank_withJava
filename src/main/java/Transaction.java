@@ -10,9 +10,9 @@ public class Transaction {
     public enum ActionType {
         DEPOSIT, WITHDRAW, FAILED_DEPOSIT, FAILED_WITHDRAW, TRANSFER,
         FAILED_TRANSFER, DELETE_ACCOUNT, FAILED_DELETE_ACCOUNT, CHANGE_PASSWORD,
-        FAILED_CHANGE_PASSWORD, FAILED_LOGIN, SUCCESS_LOGIN , ADMIN_LIST_LOGS ,
-        ADMIN_LIST_ACCOUNTS, ADMIN_CHECK_TOTAL_BALANCE , ADMIN_CREATE_ACCOUNT,
-        ADMIN_DELETE_ACCOUNT,USER_CREATE_ACCOUNT
+        FAILED_CHANGE_PASSWORD, FAILED_LOGIN, SUCCESS_LOGIN, ADMIN_LIST_LOGS,
+        ADMIN_LIST_ACCOUNTS, ADMIN_CHECK_TOTAL_BALANCE, ADMIN_CREATE_ACCOUNT,
+        ADMIN_DELETE_ACCOUNT, USER_CREATE_ACCOUNT
     }
 
     public Transaction(int senderId, int receiverId, double amount) {
@@ -20,7 +20,6 @@ public class Transaction {
         this.receiverId = receiverId;
         this.amount = amount;
     }
-
 
 
     public int getSenderId() {
@@ -36,10 +35,12 @@ public class Transaction {
     }
 
     public static void logGenerator(ActionType action) {
-        logGenerator(action,null, null, null);
+
+        logGenerator(action, null, null, null);
     }
 
     public static void logGenerator(ActionType action, Double amount) {
+
         logGenerator(action, null, null, amount);
     }
 
@@ -53,7 +54,7 @@ public class Transaction {
 
     public static void logGenerator(ActionType action, Integer senderId, Integer targetId, Double amount) {
 
-        DatabaseTransactions.logGenerator(senderId,targetId,amount,action.toString());
+        DatabaseTransactions.logGenerator(senderId, targetId, amount, action.toString());
 
     }
 

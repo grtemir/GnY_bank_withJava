@@ -5,7 +5,7 @@ public class Accounts {
 
 
     public Accounts(int id, String password, String name) {
-        this.id = -1;
+        this.id = id;
         this.password = password;
         this.name = name;
     }

@@ -4,9 +4,12 @@ import java.sql.SQLException;
 import java.sql.Statement;
 
 public class DatabaseManager {
-    private static final String URL = "jdbc:sqlite:banka.db";
+    private static String URL = "jdbc:sqlite:banka.db";
     public static Connection getConnection() throws SQLException {
         return DriverManager.getConnection(URL);
+    }
+    public static void setUrl(String newUrl){
+        URL=newUrl;
     }
 
     public static void InitialTables() throws SQLException {
@@ -22,14 +25,16 @@ public class DatabaseManager {
                 "FOREIGN KEY(id) REFERENCES users(id) ON DELETE CASCADE);";
 
         String sqlLogs="CREATE TABLE IF NOT EXISTS logRecords(" +
-                "id INTEGER PRIMARY KEY ,action TEXT NOT NULL, "+
+                "log_id INTEGER PRIMARY KEY,"+
+                "sender_id INTEGER,action TEXT NOT NULL, "+
                 "amount REAL,target_id INTEGER,crtime TIMESTAMP default CURRENT_TIMESTAMP"+
-                ",FOREIGN KEY(id) REFERENCES users(id))";
+                ",FOREIGN KEY(sender_id) REFERENCES users(id));";
 
 
         try(Connection conn = getConnection();
 
         Statement st = conn.createStatement();) {
+
             st.execute("PRAGMA foreign_keys=ON;");
             st.execute(sqlUser);
             st.execute(sqlAcc);

@@ -57,21 +57,18 @@ public class AdminServices {
         return totalBalance;
     }
 
-    public static void createAccountByAdmin(double balance,String name){
+    public static int createAccountByAdmin(String name){
         if(name==null || name.trim().isEmpty()){
             System.out.println("You entered empty values...");
-            return;
+            return -1;
         }
-        else if(balance<0 ) {
-            System.out.println("Balance cannot be below zero...");
-            return;
-        }
+
         Accounts acc=new Accounts("0000",name);
 
 
         int id=DatabaseTransactions.addAccount(acc);
         Transaction.logGenerator(Transaction.ActionType.ADMIN_CREATE_ACCOUNT,id);
-
+        return id;
     }
 
     public static void deleteAccountByAdmin(int id){
