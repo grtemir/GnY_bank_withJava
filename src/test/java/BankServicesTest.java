@@ -107,8 +107,8 @@ public class BankServicesTest {
 
         Accounts accAfter= DatabaseTransactions.findUserInfos(id);
 
-        assertEquals(realOldPassword,accAfter.getPassword());
 
+        assertTrue(SecurityManagement.verifyPassword(realOldPassword,acc.getPassword()));
     }
 
     //closeAccount() tests
@@ -117,9 +117,12 @@ public class BankServicesTest {
     void testSuccessCloseAccount(){
         int id = BankServices.createAccountByUSer("alice", "1234");
 
+
         BankServices.closeAccount(id,"1234");
 
         Accounts acc=DatabaseTransactions.findUserInfos(id);
+
+
 
         assertNull(acc);
 

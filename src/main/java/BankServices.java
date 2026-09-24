@@ -20,7 +20,7 @@ public class BankServices {
 
     public static Accounts authenticate(int id, String password) {
         Accounts acc=DatabaseTransactions.findUserInfos(id);
-        if (acc == null || !acc.getPassword().equals(password)) {
+        if (acc == null || !SecurityManagement.verifyPassword(password,acc.getPassword())) {
             System.out.println("Wrong id or password");
             return null;
         }
@@ -29,14 +29,14 @@ public class BankServices {
     }
 
 
-    public static void changePassword(String oldpass, String newpass, Accounts acc) {
+    public static void changePassword(String currentPass, String newpass, Accounts acc) {
         if (acc == null || newpass == null || newpass.trim().isEmpty()) {
             System.out.println("Invalid value...");
             if(acc!=null) {
                 Transaction.logGenerator(Transaction.ActionType.FAILED_CHANGE_PASSWORD,acc.getId());
             }return;
         }
-        if (acc.getPassword().equals(oldpass)) {
+        if (SecurityManagement.verifyPassword(currentPass,acc.getPassword())) {
             DatabaseTransactions.changePassword(acc.getId(),newpass);
             Transaction.logGenerator(Transaction.ActionType.CHANGE_PASSWORD, acc.getId());
             return;
@@ -67,7 +67,9 @@ public class BankServices {
             System.out.println("Please dont enter empty values...");
             return -1;
         }
-        Accounts acc=new Accounts(password,name);
+        String hashedPassword=SecurityManagement.hashPassword(password);
+
+        Accounts acc=new Accounts(hashedPassword,name);
 
         int id=DatabaseTransactions.addAccount(acc);
         Transaction.logGenerator(Transaction.ActionType.USER_CREATE_ACCOUNT,id);

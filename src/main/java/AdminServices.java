@@ -2,48 +2,35 @@ import javax.xml.crypto.Data;
 
 public class AdminServices {
 
-    private static final String ADMIN_USERNAME = "admin";
-    private static final String ADMIN_PASSWORD = "Admin123";
-
-    public static boolean adminAuth(String username, String pass) {
-        if (username == null || pass == null) {
-            System.out.println("You entered empty value, please try again...");
-            return false;
-        } else if (ADMIN_USERNAME.equals(username) && ADMIN_PASSWORD.equals(pass)) {
-            System.out.println("Welcome to admin panel...");
-            return true;
-        }
-        return false;
-    }
-
-    public static void listLogs() {
+    public static int listLogs() {
         int count =DatabaseTransactions.listLogs();
         if (count==0) {
             System.out.println("There're no logs yet...");
-            return;
+            return 0;
         }
-        else if(count==1){
+        else if(count==-1){
             System.out.println("An error occured while fetching logs...");
-            return;
+            return 0;
         }
-
         Transaction.logGenerator(Transaction.ActionType.ADMIN_LIST_LOGS);
+        return count;
+
 
     }
 
-    public static void listLogs(int id) {
+    public static int listLogs(int id) {
 
-        int count =DatabaseTransactions.listLogs();
+        int count =DatabaseTransactions.listLogsAnyUser(id);
         if (count==0) {
             System.out.println("There're no logs yet...");
-            return;
+            return 0;
         }
-        else if(count==1){
+        else if(count==-1){
             System.out.println("An error occured while fetching logs...");
-            return;
+            return 0;
         }
-        DatabaseTransactions.listLogsAnyUser(id);
         Transaction.logGenerator(Transaction.ActionType.ADMIN_LIST_LOGS);
+        return count;
 
     }
 
@@ -63,7 +50,9 @@ public class AdminServices {
             return -1;
         }
 
-        Accounts acc=new Accounts("0000",name);
+        String hashedPassword=SecurityManagement.hashPassword("0000");
+
+        Accounts acc=new Accounts(hashedPassword,name,"user");
 
 
         int id=DatabaseTransactions.addAccount(acc);
@@ -89,15 +78,16 @@ public class AdminServices {
     }
 
 
-    public static void listAccounts(){
+    public static int listAccounts(){
         System.out.println("|______________________________________________|");
         System.out.println("|-------------------Accounts-------------------|");
         System.out.println("|_____|______________________________|_________|");
-        DatabaseTransactions.listAccount();
+        int count=DatabaseTransactions.listAccount();
         System.out.println("|----------------------------------------------|");
         System.out.println("|--------------------------Listed %3d accounts-|");
         System.out.println("|______________________________________________|");
-
         Transaction.logGenerator(Transaction.ActionType.ADMIN_LIST_ACCOUNTS);
+        return count;
+
     }
 }

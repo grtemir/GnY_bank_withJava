@@ -125,11 +125,11 @@ public class BankMenu {
 // calculate fibonacci number
 
     private static void adminLogIn() {
-        System.out.println("Please enter admin username : ");
-        String id = scan.next();
+        System.out.println("Please enter admin id : ");
+        int id = scan.nextInt();
         System.out.println("Please enter admin password: ");
         String password = scan.next();
-        if (!AdminServices.adminAuth(id, password)) {
+        if (BankServices.authenticate(id, password)==null) {
             System.out.println("You entered wrong admin info!!!");
             clearCli();
             return;        }

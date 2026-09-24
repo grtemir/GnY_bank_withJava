@@ -7,7 +7,7 @@ import java.util.List;
 public class DatabaseTransactions {
     public static int addAccount(Accounts acc) {
 
-        String stUser = "INSERT INTO users (name,password) VALUES(?,?)";
+        String stUser = "INSERT INTO users (name,password,role) VALUES(?,?,'user')";
         String stAcc = "INSERT INTO accounts(id,name,balance) VALUES(?,?,?)";
 
         try (Connection conn = DatabaseManager.getConnection();
@@ -122,13 +122,11 @@ public class DatabaseTransactions {
             pst.setDouble(1, amount);
             pst.setInt(2, id);
             pst.executeUpdate();
-            Transaction.logGenerator(Transaction.ActionType.DEPOSIT, id, amount);
+            Transaction.logGenerator(Transaction.ActionType.WITHDRAW, id, amount);
 
         } catch (SQLException e) {
             System.out.println("Database cannot open " + e.getMessage());
         }
-
-        Transaction.logGenerator(Transaction.ActionType.WITHDRAW, id, amount);
         return true;
     }
 
@@ -152,25 +150,27 @@ public class DatabaseTransactions {
 
     }
 
-    public static void listAccount() {
-        String stm = "SELECT id,name,balance FROM accounts";
-
-        List<Accounts> accounts = new ArrayList<Accounts>();
+    public static int listAccount() {
+        String stm = "SELECT a.id,a.name,a.balance,u.role FROM accounts a JOIN users u ON u.id=a.id";
 
         try (Connection conn = DatabaseManager.getConnection();
              Statement s = conn.createStatement();) {
             ResultSet rs = s.executeQuery(stm);
+            int count=0;
             while (rs.next()) {
                 int id = rs.getInt(1);
                 String name = rs.getString(2);
                 double balance = rs.getDouble(3);
+                String role=rs.getString(4);
 
-                System.out.println("|%5d|%30s|%8.2f|".formatted(id, name, balance));
-
+                System.out.println("|%5d|%24s|%8.2f|%5s|".formatted(id, name, balance,role));
+                count++;
             }
+            return count;
 
         } catch (SQLException e) {
             System.out.println("Database cannot open" + e.getMessage());
+            return -1;
         }
 
     }
@@ -191,7 +191,7 @@ public class DatabaseTransactions {
     }
 
     public static Accounts findUserInfos(int id) {
-        String stm = "SELECT name,password FROM users WHERE id=?";
+        String stm = "SELECT name,password,role FROM users WHERE id=?";
 
         try (Connection conn = DatabaseManager.getConnection();
              PreparedStatement pst = conn.prepareStatement(stm);) {
@@ -201,8 +201,9 @@ public class DatabaseTransactions {
             if (rs.next()) {
                 String name = rs.getString(1);
                 String password = rs.getString(2);
+                String role=rs.getString(3);
 
-                return new Accounts(id, password, name);
+                return new Accounts(id, password, name,role);
             }
         } catch (SQLException e) {
             System.out.println("Database cannot open " + e.getMessage());
@@ -257,7 +258,7 @@ public class DatabaseTransactions {
     }
 
     public static int listLogsAnyUser(int id) {
-    String sqlUserLogs="SELECT * FROM logRecords WHERE id=?";
+    String sqlUserLogs="SELECT * FROM logRecords WHERE sender_id=?";
         try(Connection conn=DatabaseManager.getConnection();
             PreparedStatement pstLogs=conn.prepareStatement(sqlUserLogs);){
             pstLogs.setInt(1,id);

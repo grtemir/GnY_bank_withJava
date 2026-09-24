@@ -2,7 +2,7 @@ public class Accounts {
     private int id;
     private String password;
     private String name;
-
+    private String role;
 
     public Accounts(int id, String password, String name) {
         this.id = id;
@@ -15,18 +15,24 @@ public class Accounts {
         this.name = name;
     }
 
+    public Accounts(String password, String name,String role) {
+        this.password = password;
+        this.name = name;
+        this.role=role;
+    }
+    public Accounts(int id, String password, String name, String role) {
+        this.password = password;
+        this.name = name;
+        this.role=role;
+        this.id = id;
+    }
 
 
     public int getId() {
         return id;
     }
 
-    public void setId(int id) {
-        if (id <= 0) {
-            throw new IllegalArgumentException("Account id cannot be negative!!");
-        }
-        this.id = id;
-    }
+
 
     public String getPassword() {
         return password;
@@ -46,7 +52,22 @@ public class Accounts {
     }
 
     public void setName(String name) {
+        if(name==null || name.length()>20){
+            throw new IllegalArgumentException("The name cannot be longer than 20 char or empty!!");
+
+        }
         this.name = name;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        if(role.equals("admin") ||role.equals("user")){
+            this.role = role;
+            return;}
+        throw new IllegalArgumentException("Role must be admin or user!!");
     }
 
 }
