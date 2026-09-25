@@ -35,11 +35,11 @@ public class DatabaseManager {
                 ",FOREIGN KEY(sender_id) REFERENCES users(id));";
 
 
-        String createAdmin="INSERT OR IGNORE INTO users (id,name,password,role) VALUES(1,'admin',?, 'admin')";
+        String createAdmin = "INSERT OR IGNORE INTO users (id,name,password,role) VALUES(1,'admin',?, 'admin')";
 
         try (Connection conn = getConnection();
              Statement st = conn.createStatement();
-             PreparedStatement ps=conn.prepareStatement(createAdmin);) {
+        ) {
 
             //st.execute("DROP table users");
             //st.execute("DROP table accounts");
@@ -53,11 +53,13 @@ public class DatabaseManager {
 
             //resetLogs();;
             //resetUsersAndAccounts();
-
-            String hashedPassword = SecurityManagement.hashPassword("Admin123");
-            ps.setString(1,hashedPassword);
-            ps.executeUpdate();
-
+            try (
+                    PreparedStatement ps = conn.prepareStatement(createAdmin);
+            ) {
+                String hashedPassword = SecurityManagement.hashPassword("Admin123");
+                ps.setString(1, hashedPassword);
+                ps.executeUpdate();
+            }
 
             System.out.println("Tables created succesfully");
         } catch (SQLException e) {
